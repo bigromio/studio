@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCurrentFrame, AbsoluteFill, Series } from 'remotion';
 import { StudioSceneShot } from './types';
 import { RoomEnvironment } from './Environment/RoomEnvironment';
 import { CharacterRig } from './Character/CharacterRig';
@@ -6,13 +7,21 @@ import { computeCharacterPose } from './Actions/useCharacterPose';
 import { CameraEngine } from './Camera/CameraEngine';
 import { LightingEngine } from './Lighting/LightingEngine';
 import { TypographyEngine } from './Typography/TypographyEngine';
+import { SAMPLE_STUDIO_SHOTS } from './sampleScenes';
 
-interface CartoonPresenterVideoProps {
+interface SingleShotPresenterProps {
   shot: StudioSceneShot;
-  frame: number;
+  frame?: number;
 }
 
-export const CartoonPresenterVideo: React.FC<CartoonPresenterVideoProps> = ({ shot, frame }) => {
+/**
+ * Single Shot Scene Presenter
+ * Renders in pure 1080x1920 isolated canvas with absolute positioning and SVG vectors.
+ */
+export const SingleShotPresenter: React.FC<SingleShotPresenterProps> = ({ shot, frame: propFrame }) => {
+  const currentFrame = useCurrentFrame();
+  const frame = propFrame !== undefined ? propFrame : currentFrame;
+
   const { environment, character, camera, lighting, hook, caption } = shot;
 
   // Calculate bone rotations and dynamic visemes for speech/action
@@ -23,12 +32,12 @@ export const CartoonPresenterVideo: React.FC<CartoonPresenterVideoProps> = ({ sh
   );
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-black select-none">
+    <AbsoluteFill style={{ backgroundColor: '#000000', overflow: 'hidden' }}>
       {/* 1. Master Camera Viewport */}
       <CameraEngine config={camera} frame={frame}>
-        <div className="relative w-full h-full">
+        <div style={{ position: 'relative', width: '1080px', height: '1920px' }}>
           {/* 2. Room Environment (5 Angular Perspectives & Elements) */}
-          <div className="absolute inset-0 z-0">
+          <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
             <RoomEnvironment config={environment} frame={frame} />
           </div>
 
@@ -39,13 +48,16 @@ export const CartoonPresenterVideo: React.FC<CartoonPresenterVideoProps> = ({ sh
             frame={frame}
           />
 
-          {/* 4. Character Vector Rig Layer */}
-          <div 
-            className="absolute z-20 pointer-events-none origin-bottom transition-all duration-75"
+          {/* 4. Character Vector Rig Layer (Precision Anchored Above Desk) */}
+          <div
             style={{
+              position: 'absolute',
+              zIndex: 20,
+              pointerEvents: 'none',
               left: `${character.positionX}%`,
               bottom: `${character.positionY}%`,
-              transform: `translateX(-50%) scale(${character.scale})`
+              transform: `translateX(-50%) scale(${character.scale})`,
+              transformOrigin: '50% 90%'
             }}
           >
             <CharacterRig
@@ -71,6 +83,44 @@ export const CartoonPresenterVideo: React.FC<CartoonPresenterVideoProps> = ({ sh
           <LightingEngine config={lighting} frame={frame} />
         </div>
       </CameraEngine>
-    </div>
+    </AbsoluteFill>
+  );
+};
+
+export interface CartoonPresenterVideoProps {
+  shots?: StudioSceneShot[];
+  shot?: StudioSceneShot;
+  frame?: number;
+}
+
+/**
+ * Master CartoonPresenterVideo Remotion Composition
+ * Can render either a single scene or a full sequenced series of shots.
+ */
+export const CartoonPresenterVideo: React.FC<CartoonPresenterVideoProps> = ({
+  shots = SAMPLE_STUDIO_SHOTS,
+  shot,
+  frame
+}) => {
+  // If a single shot is directly passed
+  if (shot) {
+    return <SingleShotPresenter shot={shot} frame={frame} />;
+  }
+
+  // If a sequence of shots is passed, render with Remotion <Series>
+  if (shots.length === 1) {
+    return <SingleShotPresenter shot={shots[0]} frame={frame} />;
+  }
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: '#000000' }}>
+      <Series>
+        {shots.map((s) => (
+          <Series.Sequence key={s.id} durationInFrames={s.durationInFrames}>
+            <SingleShotPresenter shot={s} />
+          </Series.Sequence>
+        ))}
+      </Series>
+    </AbsoluteFill>
   );
 };

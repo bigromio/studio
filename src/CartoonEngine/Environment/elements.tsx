@@ -1,15 +1,23 @@
 import React from 'react';
 import { RoomEnvironmentConfig, TimeOfDay } from '../types';
 
-// Animated Code on Screen
-export const ScreenCodeDisplay: React.FC<{ theme: RoomEnvironmentConfig['codeTheme']; frame: number }> = ({ theme, frame }) => {
+/**
+ * Pure SVG Screen Code Display
+ * Renders syntax-highlighted scrolling code natively inside SVG
+ */
+export const ScreenCodeDisplay: React.FC<{
+  theme: RoomEnvironmentConfig['codeTheme'];
+  frame: number;
+  width?: number;
+  height?: number;
+}> = ({ theme, frame, width = 600, height = 300 }) => {
   const codeLinesMatrix = [
     '01011001 01100001 01111001',
     'const brain = new NeuralCore();',
     'while(alive) { innovate(); }',
     'import { future } from "ai";',
     'system.matrix.override(0x7F);',
-    'renderScene({ angle: 45 });',
+    'renderScene({ canvas: "1080x1920" });',
     'export default SuperCartoon;'
   ];
 
@@ -34,148 +42,203 @@ export const ScreenCodeDisplay: React.FC<{ theme: RoomEnvironmentConfig['codeThe
   const lines = theme === 'matrix' ? codeLinesMatrix : theme === 'synthwave' ? codeLinesSynth : codeLinesVsCode;
   const activeLine = Math.floor(frame / 6) % lines.length;
 
-  const colorStyle = theme === 'matrix' 
-    ? 'text-emerald-400 bg-black/90 font-mono border-emerald-500/40' 
-    : theme === 'synthwave' 
-    ? 'text-pink-400 bg-purple-950/90 font-mono border-pink-500/40' 
-    : 'text-sky-300 bg-slate-900/90 font-mono border-sky-500/30';
+  const bgFill = theme === 'matrix' ? '#020617' : theme === 'synthwave' ? '#1e1035' : '#0f172a';
+  const textColor = theme === 'matrix' ? '#34d399' : theme === 'synthwave' ? '#f472b6' : '#38bdf8';
+  const activeColor = theme === 'matrix' ? '#10b981' : theme === 'synthwave' ? '#ec4899' : '#60a5fa';
 
   return (
-    <div className={`w-full h-full p-2.5 text-[10px] leading-relaxed overflow-hidden border rounded flex flex-col justify-between select-none shadow-inner ${colorStyle}`}>
-      <div className="flex items-center justify-between border-b border-current pb-1 opacity-70 mb-1">
-        <div className="flex space-x-1 rtl:space-x-reverse">
-          <span className="w-2 h-2 rounded-full bg-red-400 inline-block opacity-80" />
-          <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block opacity-80" />
-          <span className="w-2 h-2 rounded-full bg-green-400 inline-block opacity-80" />
-        </div>
-        <span className="text-[8px] uppercase tracking-wider font-semibold">terminal.sh</span>
-      </div>
-      <div className="space-y-1">
-        {lines.map((line, idx) => (
-          <div key={idx} className={`transition-all duration-150 flex items-center ${idx === activeLine ? 'opacity-100 font-bold translate-x-1' : 'opacity-60'}`}>
-            <span className="opacity-40 mr-1.5 text-[8px]">{idx + 1}</span>
-            <span className="truncate">{line}</span>
-            {idx === activeLine && <span className="inline-block w-1.5 h-3 bg-current ml-1 animate-pulse" />}
-          </div>
-        ))}
-      </div>
-      <div className="mt-1 pt-1 border-t border-current/20 flex justify-between text-[7px] opacity-75">
-        <span>UTF-8</span>
-        <span>GIT: main*</span>
-        <span>FPS: 30</span>
-      </div>
-    </div>
-  );
-};
+    <g id="screen-code-display">
+      {/* Terminal background */}
+      <rect x="0" y="0" width={width} height={height} rx="8" fill={bgFill} stroke="#334155" strokeWidth="3" />
 
-// Coffee Cup with Animated Steam
-export const CoffeeCupSteam: React.FC<{ showSteam: boolean; frame: number; text: string }> = ({ showSteam, frame, text }) => {
-  const wave1 = Math.sin(frame * 0.1) * 3;
-  const wave2 = Math.cos(frame * 0.08) * 3;
+      {/* Terminal Title Bar */}
+      <rect x="0" y="0" width={width} height="36" rx="8" fill="#020617" />
+      <circle cx="20" cy="18" r="5" fill="#ef4444" />
+      <circle cx="36" cy="18" r="5" fill="#eab308" />
+      <circle cx="52" cy="18" r="5" fill="#22c55e" />
+      <text x={width / 2} y="22" fill="#94a3b8" fontSize="13" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+        terminal.sh — 1080x1920
+      </text>
 
-  return (
-    <div className="relative inline-block">
-      {showSteam && (
-        <svg className="absolute -top-6 left-1/2 -translate-x-1/2 w-6 h-7 pointer-events-none opacity-70" viewBox="0 0 24 30">
-          <path
-            d={`M 8 26 Q ${8 + wave1} 16, ${12 - wave2} 8 T 14 2`}
-            fill="none"
-            stroke="rgba(255,255,255,0.7)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            className="animate-pulse"
-          />
-          <path
-            d={`M 14 26 Q ${14 - wave2} 18, ${10 + wave1} 10 T 12 3`}
-            fill="none"
-            stroke="rgba(220,240,255,0.5)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      )}
-      <div className="w-8 h-9 rounded-b-md bg-amber-800 border-2 border-amber-950 flex flex-col justify-end items-center relative shadow-md">
-        <span className="text-[6px] text-amber-100 font-black tracking-tighter truncate max-w-[24px] mb-1">
-          {text || 'DEV'}
-        </span>
-        <div className="absolute right-[-6px] top-1.5 w-2.5 h-4 border-2 border-amber-950 rounded-r-md" />
-      </div>
-    </div>
-  );
-};
-
-// Window with dynamic time of day / rain / city skyline
-export const ProgrammerWindow: React.FC<{ timeOfDay: TimeOfDay; rain: boolean; frame: number }> = ({ timeOfDay, rain, frame }) => {
-  const bgGradient = 
-    timeOfDay === 'midnight' ? 'from-indigo-950 via-slate-900 to-black' :
-    timeOfDay === 'sunset' ? 'from-orange-500 via-purple-800 to-slate-950' :
-    timeOfDay === 'cyberpunk_night' ? 'from-fuchsia-950 via-cyan-950 to-slate-950' :
-    'from-sky-300 via-blue-200 to-amber-100';
-
-  return (
-    <div className={`w-full h-full rounded-lg border-4 border-slate-700 overflow-hidden relative shadow-2xl bg-gradient-to-b ${bgGradient}`}>
-      {/* City skyline silhouettes */}
-      <div className="absolute bottom-0 inset-x-0 h-1/2 flex items-end justify-around opacity-40">
-        <div className="w-5 h-16 bg-slate-950 rounded-t" />
-        <div className="w-8 h-24 bg-slate-900 rounded-t flex flex-wrap gap-0.5 p-1">
-          <div className="w-1 h-1 bg-yellow-200/60" />
-          <div className="w-1 h-1 bg-yellow-200/60" />
-          <div className="w-1 h-1 bg-cyan-200/60" />
-        </div>
-        <div className="w-6 h-12 bg-slate-950 rounded-t" />
-        <div className="w-9 h-20 bg-slate-900 rounded-t" />
-      </div>
-
-      {/* Moon or Sun */}
-      {timeOfDay === 'daylight' ? (
-        <div className="absolute top-3 right-4 w-7 h-7 rounded-full bg-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.8)]" />
-      ) : (
-        <div className="absolute top-3 right-4 w-6 h-6 rounded-full bg-slate-100 shadow-[0_0_15px_rgba(255,255,255,0.4)]" />
-      )}
-
-      {/* Rain droplets overlay */}
-      {rain && (
-        <div className="absolute inset-0 pointer-events-none opacity-40">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <line x1={`${(frame * 7) % 100}%`} y1="0%" x2={`${((frame * 7) % 100) - 10}%`} y2="100%" stroke="rgba(255,255,255,0.6)" strokeWidth="1" strokeDasharray="5,15" />
-            <line x1={`${((frame * 11) + 40) % 100}%`} y1="0%" x2={`${(((frame * 11) + 40) % 100) - 10}%`} y2="100%" stroke="rgba(255,255,255,0.4)" strokeWidth="1" strokeDasharray="4,12" />
-          </svg>
-        </div>
-      )}
-
-      {/* Window Grill Cross */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-full h-1 bg-slate-700" />
-        <div className="h-full w-1 bg-slate-700 absolute" />
-      </div>
-    </div>
-  );
-};
-
-// Blinking Server Rack
-export const ServerRackTower: React.FC<{ blinking: boolean; frame: number }> = ({ blinking, frame }) => {
-  return (
-    <div className="w-14 h-48 bg-slate-900 border-2 border-slate-700 rounded-md p-1.5 flex flex-col justify-between shadow-2xl relative">
-      <div className="text-[7px] text-slate-400 font-mono text-center border-b border-slate-800 pb-0.5">DEV-NODE-01</div>
-      <div className="space-y-1.5 my-auto">
-        {[0, 1, 2, 3, 4].map((unit) => {
-          const isLedOn1 = blinking ? (frame + unit * 3) % 4 === 0 : true;
-          const isLedOn2 = blinking ? (frame + unit * 5) % 6 === 0 : false;
+      {/* Code Lines */}
+      <g transform="translate(24, 65)">
+        {lines.map((line, idx) => {
+          const isActive = idx === activeLine;
           return (
-            <div key={unit} className="h-5 bg-slate-950 border border-slate-800 rounded p-1 flex items-center justify-between">
-              <div className="w-2 h-2 rounded-full bg-slate-800 flex items-center justify-center">
-                <span className={`w-1.5 h-1.5 rounded-full ${isLedOn1 ? 'bg-emerald-400 shadow-[0_0_6px_#34d399]' : 'bg-emerald-950'}`} />
-              </div>
-              <div className="flex space-x-1 rtl:space-x-reverse">
-                <span className={`w-1 h-1 rounded-full ${isLedOn2 ? 'bg-cyan-400 shadow-[0_0_5px_#22d3ee]' : 'bg-cyan-950'}`} />
-                <span className="w-1 h-1 rounded-full bg-blue-500 animate-pulse" />
-              </div>
-              <div className="w-4 h-1 bg-slate-800 rounded" />
-            </div>
+            <g key={idx} transform={`translate(0, ${idx * 30})`}>
+              <text x="0" y="0" fill="#475569" fontSize="14" fontFamily="monospace">
+                {String(idx + 1).padStart(2, '0')}
+              </text>
+              <text
+                x="35"
+                y="0"
+                fill={isActive ? activeColor : textColor}
+                fontSize={isActive ? '15' : '14'}
+                fontFamily="monospace"
+                fontWeight={isActive ? 'bold' : 'normal'}
+                opacity={isActive ? 1 : 0.75}
+              >
+                {line}
+              </text>
+              {isActive && (
+                <rect x={35 + line.length * 8.8} y="-12" width="8" height="15" fill={activeColor} opacity={(frame % 15 > 7) ? 1 : 0} />
+              )}
+            </g>
           );
         })}
-      </div>
-      <div className="text-[6px] text-emerald-400 font-mono text-center bg-black/60 rounded px-0.5">99.99% UP</div>
-    </div>
+      </g>
+    </g>
+  );
+};
+
+/**
+ * Pure SVG Coffee Cup with animated steam
+ */
+export const CoffeeCupSteamSVG: React.FC<{
+  showSteam: boolean;
+  frame: number;
+  text: string;
+}> = ({ showSteam, frame, text }) => {
+  const wave1 = Math.sin(frame * 0.1) * 4;
+  const wave2 = Math.cos(frame * 0.08) * 4;
+
+  return (
+    <g id="coffee-cup-group">
+      {/* Animated Steam */}
+      {showSteam && (
+        <g id="steam" opacity="0.75">
+          <path
+            d={`M 20 -10 Q ${20 + wave1} -30, ${28 - wave2} -50 T 32 -70`}
+            fill="none"
+            stroke="rgba(255,255,255,0.7)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <path
+            d={`M 35 -10 Q ${35 - wave2} -35, ${25 + wave1} -55 T 30 -75`}
+            fill="none"
+            stroke="rgba(186,230,253,0.6)"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </g>
+      )}
+
+      {/* Mug Body */}
+      <rect x="0" y="0" width="55" height="60" rx="10" fill="#92400e" stroke="#451a03" strokeWidth="4" />
+      {/* Mug Handle */}
+      <path d="M 55 12 Q 78 12 78 30 Q 78 48 55 48" fill="none" stroke="#451a03" strokeWidth="7" strokeLinecap="round" />
+      <path d="M 55 12 Q 74 12 74 30 Q 74 48 55 48" fill="none" stroke="#92400e" strokeWidth="4" strokeLinecap="round" />
+
+      {/* Custom Text on Mug */}
+      <text x="27" y="36" fill="#fef3c7" fontSize="13" fontFamily="sans-serif" fontWeight="900" textAnchor="middle">
+        {text || 'CODE'}
+      </text>
+    </g>
+  );
+};
+
+/**
+ * Pure SVG High Window with City Skyline & Rain
+ */
+export const ProgrammerWindowSVG: React.FC<{
+  timeOfDay: TimeOfDay;
+  rain: boolean;
+  frame: number;
+  width?: number;
+  height?: number;
+}> = ({ timeOfDay, rain, frame, width = 340, height = 400 }) => {
+  const isNight = timeOfDay === 'midnight' || timeOfDay === 'cyberpunk_night';
+  const isSunset = timeOfDay === 'sunset';
+
+  const skyFill = isNight ? '#090d16' : isSunset ? '#4a1d4a' : '#38bdf8';
+
+  return (
+    <g id="programmer-window">
+      {/* Window Frame Outer Bevel */}
+      <rect x="0" y="0" width={width} height={height} rx="16" fill={skyFill} stroke="#334155" strokeWidth="8" />
+
+      {/* Sun or Glowing Moon */}
+      {isNight ? (
+        <circle cx={width - 60} cy="70" r="30" fill="#f1f5f9" opacity="0.9" />
+      ) : isSunset ? (
+        <circle cx={width - 70} cy="90" r="40" fill="#f97316" opacity="0.9" />
+      ) : (
+        <circle cx={width - 60} cy="70" r="35" fill="#fef08a" opacity="0.95" />
+      )}
+
+      {/* City High-rise Skylines */}
+      <g fill="#020617" opacity={isNight ? 0.95 : 0.7}>
+        <rect x="20" y={height - 220} width="60" height="220" rx="4" />
+        <rect x="90" y={height - 280} width="75" height="280" rx="4" />
+        <rect x="175" y={height - 180} width="55" height="180" rx="4" />
+        <rect x="240" y={height - 310} width="80" height="310" rx="4" />
+      </g>
+
+      {/* Building Windows Glowing */}
+      <g fill="#fde047" opacity="0.6">
+        <circle cx="110" cy={height - 240} r="2" />
+        <circle cx="130" cy={height - 240} r="2" />
+        <circle cx="110" cy={height - 200} r="2" />
+        <circle cx="140" cy={height - 200} r="2" />
+        <circle cx="260" cy={height - 260} r="2" />
+        <circle cx="290" cy={height - 260} r="2" />
+        <circle cx="270" cy={height - 220} r="2" />
+      </g>
+
+      {/* Rain Effect */}
+      {rain && (
+        <g stroke="#93c5fd" strokeWidth="2" opacity="0.4" strokeLinecap="round">
+          {[...Array(12)].map((_, i) => {
+            const rx = ((i * 35 + frame * 9) % width);
+            const ry = ((i * 45 + frame * 14) % height);
+            return <line key={i} x1={rx} y1={ry} x2={rx - 8} y2={ry + 22} />;
+          })}
+        </g>
+      )}
+
+      {/* Window Grill Grid */}
+      <line x1="0" y1={height / 2} x2={width} y2={height / 2} stroke="#334155" strokeWidth="6" />
+      <line x1={width / 2} y1="0" x2={width / 2} y2={height} stroke="#334155" strokeWidth="6" />
+    </g>
+  );
+};
+
+/**
+ * Pure SVG Server Rack Tower
+ */
+export const ServerRackTowerSVG: React.FC<{
+  blinking: boolean;
+  frame: number;
+  height?: number;
+}> = ({ blinking, frame, height = 550 }) => {
+  return (
+    <g id="server-rack-tower">
+      {/* Tower Cabinet */}
+      <rect x="0" y="0" width="160" height={height} rx="8" fill="#090d16" stroke="#1e293b" strokeWidth="6" />
+      <rect x="15" y="15" width="130" height="24" rx="4" fill="#020617" />
+      <text x="80" y="32" fill="#64748b" fontSize="11" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+        DEV-RACK-01
+      </text>
+
+      {/* Rack Units */}
+      {[0, 1, 2, 3, 4, 5].map((u) => {
+        const yPos = 55 + u * 75;
+        const ledOn1 = blinking ? (frame + u * 4) % 4 === 0 : true;
+        const ledOn2 = blinking ? (frame + u * 6) % 6 === 0 : false;
+        return (
+          <g key={u} transform={`translate(15, ${yPos})`}>
+            <rect x="0" y="0" width="130" height="65" rx="4" fill="#0f172a" stroke="#334155" strokeWidth="2.5" />
+            <circle cx="18" cy="32" r="6" fill={ledOn1 ? '#10b981' : '#064e3b'} />
+            <circle cx="36" cy="32" r="6" fill={ledOn2 ? '#06b6d4' : '#083344'} />
+            <circle cx="54" cy="32" r="6" fill="#ef4444" opacity="0.8" />
+            {/* Ventilation slots */}
+            <line x1="72" y1="25" x2="118" y2="25" stroke="#1e293b" strokeWidth="3" />
+            <line x1="72" y1="35" x2="118" y2="35" stroke="#1e293b" strokeWidth="3" />
+            <line x1="72" y1="45" x2="118" y2="45" stroke="#1e293b" strokeWidth="3" />
+          </g>
+        );
+      })}
+    </g>
   );
 };

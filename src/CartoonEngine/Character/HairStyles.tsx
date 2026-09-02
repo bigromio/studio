@@ -6,108 +6,141 @@ interface HairStylesProps {
   colorHex: string;
 }
 
+/**
+ * Pure SVG Hair Styles Component
+ * Anchored to the Head SVG coordinate system (Head center ~ (300, 220))
+ */
 export const HairStyles: React.FC<HairStylesProps> = ({ style, colorHex }) => {
   switch (style) {
     case 'cyber_spiky':
       return (
-        <svg className="w-36 h-24 -mt-6" viewBox="0 0 120 80">
+        <g id="hair-cyber-spiky">
           <path
-            d="M 15 65 Q 10 40 25 30 L 35 10 L 48 26 L 60 4 L 72 26 L 85 8 L 95 32 Q 110 42 105 65 Z"
+            d="M 210 220 C 200 160 215 110 240 90 L 260 40 L 285 85 L 300 30 L 320 85 L 345 45 L 365 95 C 390 120 405 170 390 220 C 375 160 350 135 300 135 C 250 135 225 160 210 220 Z"
             fill={colorHex}
             stroke="#0f172a"
-            strokeWidth="3"
+            strokeWidth="5"
             strokeLinejoin="round"
           />
-          {/* Cyber Neon Highlights */}
-          <path d="M 46 28 L 60 12 L 70 28" fill="none" stroke="#22d3ee" strokeWidth="2" opacity="0.8" />
-        </svg>
+          {/* Cyber Neon Accents */}
+          <path
+            d="M 285 90 L 300 45 L 315 90"
+            fill="none"
+            stroke="#06b6d4"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 245 100 L 260 55 L 270 95"
+            fill="none"
+            stroke="#ec4899"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </g>
       );
 
     case 'slick_fade':
       return (
-        <svg className="w-34 h-20 -mt-5" viewBox="0 0 110 65">
+        <g id="hair-slick-fade">
           <path
-            d="M 12 55 C 10 25, 30 5, 80 5 C 100 5, 102 30, 98 55 C 90 40, 30 35, 12 55 Z"
+            d="M 215 200 C 210 130 250 70 340 70 C 385 70 395 120 385 190 C 365 150 255 140 215 200 Z"
             fill={colorHex}
             stroke="#0f172a"
-            strokeWidth="3"
+            strokeWidth="5"
           />
-          {/* Fade Texture */}
-          <line x1="16" y1="45" x2="30" y2="40" stroke="#000000" strokeWidth="1.5" opacity="0.3" />
-          <line x1="20" y1="50" x2="35" y2="45" stroke="#000000" strokeWidth="1.5" opacity="0.3" />
-        </svg>
+          {/* Fade Texture Detail */}
+          <path d="M 220 180 L 245 165" stroke="#000000" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+          <path d="M 225 190 L 250 175" stroke="#000000" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+          <path d="M 230 200 L 255 185" stroke="#000000" strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+        </g>
       );
 
     case 'afro':
       return (
-        <svg className="w-38 h-28 -mt-9" viewBox="0 0 130 95">
-          <circle cx="65" cy="50" r="42" fill={colorHex} stroke="#0f172a" strokeWidth="3" />
-          <circle cx="35" cy="45" r="22" fill={colorHex} />
-          <circle cx="95" cy="45" r="22" fill={colorHex} />
-          <circle cx="65" cy="22" r="22" fill={colorHex} />
-        </svg>
+        <g id="hair-afro">
+          <circle cx="300" cy="190" r="105" fill={colorHex} stroke="#0f172a" strokeWidth="6" />
+          <circle cx="225" cy="170" r="50" fill={colorHex} />
+          <circle cx="375" cy="170" r="50" fill={colorHex} />
+          <circle cx="300" cy="115" r="50" fill={colorHex} />
+          <circle cx="250" cy="130" r="45" fill={colorHex} />
+          <circle cx="350" cy="130" r="45" fill={colorHex} />
+        </g>
       );
 
     case 'ponytail':
       return (
-        <div className="relative">
-          <svg className="w-34 h-22 -mt-5" viewBox="0 0 110 70">
-            <path
-              d="M 15 55 C 15 20, 45 8, 85 15 C 95 25, 95 50, 95 55 C 80 40, 40 40, 15 55 Z"
-              fill={colorHex}
-              stroke="#0f172a"
-              strokeWidth="3"
-            />
-          </svg>
-          {/* Back ponytail tail */}
-          <div 
-            className="absolute -top-3 -right-6 w-12 h-20 rounded-r-3xl border-3 border-slate-900 shadow-md"
-            style={{ backgroundColor: colorHex }}
+        <g id="hair-ponytail">
+          {/* Back Ponytail Tail */}
+          <path
+            d="M 370 140 C 420 120 440 160 435 240 C 425 250 405 240 395 200 C 390 170 375 155 370 140 Z"
+            fill={colorHex}
+            stroke="#0f172a"
+            strokeWidth="5"
           />
-        </div>
+          {/* Ponytail Hair tie */}
+          <ellipse cx="380" cy="150" rx="8" ry="14" fill="#f43f5e" stroke="#0f172a" strokeWidth="3" />
+          {/* Front hair sweep */}
+          <path
+            d="M 215 210 C 215 125 270 85 365 95 C 385 115 385 180 380 200 C 350 150 260 150 215 210 Z"
+            fill={colorHex}
+            stroke="#0f172a"
+            strokeWidth="5"
+          />
+        </g>
       );
 
     case 'anime_bangs':
       return (
-        <svg className="w-36 h-24 -mt-6" viewBox="0 0 120 80">
+        <g id="hair-anime-bangs">
           <path
-            d="M 15 65 C 10 20, 45 8, 105 20 C 105 45, 100 65, 95 65 L 85 45 L 75 60 L 60 42 L 48 58 L 35 44 L 25 65 Z"
+            d="M 210 220 C 200 120 260 80 390 100 C 400 150 390 220 380 220 L 360 170 L 340 210 L 315 160 L 290 205 L 265 165 L 245 220 Z"
             fill={colorHex}
             stroke="#0f172a"
-            strokeWidth="3"
+            strokeWidth="5"
             strokeLinejoin="round"
           />
-        </svg>
+        </g>
       );
 
     case 'beanie_hair':
       return (
-        <svg className="w-34 h-20 -mt-5" viewBox="0 0 110 65">
-          {/* Peeking hair tufts */}
-          <path d="M 20 45 Q 15 60 10 58 Q 25 50 30 45" fill={colorHex} stroke="#0f172a" strokeWidth="2" />
-          <path d="M 80 45 Q 95 60 100 58 Q 85 50 80 45" fill={colorHex} stroke="#0f172a" strokeWidth="2" />
-        </svg>
+        <g id="hair-beanie-tufts">
+          {/* Subtle side tufts peeking out */}
+          <path
+            d="M 220 190 Q 205 225 195 215 Q 225 200 235 190"
+            fill={colorHex}
+            stroke="#0f172a"
+            strokeWidth="3.5"
+          />
+          <path
+            d="M 380 190 Q 395 225 405 215 Q 375 200 365 190"
+            fill={colorHex}
+            stroke="#0f172a"
+            strokeWidth="3.5"
+          />
+        </g>
       );
 
     case 'bald_beard':
-      return <div className="w-32 h-6" />; // Clean dome
+      return null; // Clean dome
 
     case 'messy_curly':
     default:
       return (
-        <svg className="w-36 h-24 -mt-7" viewBox="0 0 120 80">
+        <g id="hair-messy-curly">
           <path
-            d="M 18 60 C 10 45, 12 25, 30 18 C 45 5, 75 5, 90 18 C 108 25, 110 45, 102 60 C 95 45, 85 38, 70 40 C 55 35, 35 45, 18 60 Z"
+            d="M 215 210 C 195 170 200 120 240 100 C 265 75 335 75 360 100 C 395 115 405 165 385 210 C 370 165 350 145 320 150 C 285 138 250 160 215 210 Z"
             fill={colorHex}
             stroke="#0f172a"
-            strokeWidth="3"
+            strokeWidth="5"
             strokeLinejoin="round"
           />
-          {/* Curly loops */}
-          <circle cx="38" cy="22" r="7" fill={colorHex} stroke="#0f172a" strokeWidth="2" />
-          <circle cx="58" cy="16" r="8" fill={colorHex} stroke="#0f172a" strokeWidth="2" />
-          <circle cx="80" cy="22" r="7" fill={colorHex} stroke="#0f172a" strokeWidth="2" />
-        </svg>
+          {/* Stylized Curls */}
+          <circle cx="260" cy="115" r="16" fill={colorHex} stroke="#0f172a" strokeWidth="4" />
+          <circle cx="300" cy="98" r="18" fill={colorHex} stroke="#0f172a" strokeWidth="4" />
+          <circle cx="340" cy="115" r="16" fill={colorHex} stroke="#0f172a" strokeWidth="4" />
+        </g>
       );
   }
 };

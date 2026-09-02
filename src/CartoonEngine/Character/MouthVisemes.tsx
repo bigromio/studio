@@ -8,88 +8,89 @@ interface MouthVisemesProps {
   frame?: number;
 }
 
+/**
+ * Pure SVG Mouth & Speech Visemes
+ * Coordinate Origin: Centered in Head SVG at (300, 275)
+ */
 export const MouthVisemes: React.FC<MouthVisemesProps> = ({ viseme, skinColor, isTalking = false, frame = 0 }) => {
-  // If talking, add subtle dynamic variation if viseme is steady
-  const talkBounce = isTalking ? Math.sin(frame * 0.4) * 1.5 : 0;
+  const talkBounce = isTalking ? Math.sin(frame * 0.4) * 2 : 0;
 
   switch (viseme) {
     case 'A_AH': // Open wide mouth
       return (
-        <svg className="w-12 h-8" viewBox="0 0 48 32">
-          <ellipse cx="24" cy={16 + talkBounce} rx="14" ry="10" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          {/* Top teeth */}
-          <path d="M 14 12 Q 24 14 34 12 L 32 15 Q 24 16 16 15 Z" fill="#ffffff" />
+        <g id="viseme-a-ah" transform={`translate(0, ${talkBounce})`}>
+          <ellipse cx="300" cy="275" rx="22" ry="15" fill="#7f1d1d" stroke="#0f172a" strokeWidth="4" />
+          {/* Upper Teeth */}
+          <path d="M 285 264 Q 300 268 315 264 L 313 268 Q 300 270 287 268 Z" fill="#ffffff" />
           {/* Tongue */}
-          <path d="M 16 22 Q 24 18 32 22 Q 24 26 16 22 Z" fill="#f43f5e" />
-        </svg>
+          <path d="M 288 282 Q 300 274 312 282 Q 300 288 288 282 Z" fill="#f43f5e" />
+        </g>
       );
 
     case 'O_OH': // Rounded O shape
       return (
-        <svg className="w-10 h-8" viewBox="0 0 40 32">
-          <ellipse cx="20" cy={16 + talkBounce} rx="9" ry="11" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          <ellipse cx="20" cy={18 + talkBounce} rx="5" ry="4" fill="#f43f5e" />
-        </svg>
+        <g id="viseme-o-oh" transform={`translate(0, ${talkBounce})`}>
+          <ellipse cx="300" cy="275" rx="14" ry="16" fill="#7f1d1d" stroke="#0f172a" strokeWidth="4" />
+          <ellipse cx="300" cy="278" rx="7" ry="5" fill="#f43f5e" />
+        </g>
       );
 
     case 'E_EE': // Wide teeth smile / grin
       return (
-        <svg className="w-14 h-7" viewBox="0 0 56 28">
-          <path d="M 8 12 Q 28 8 48 12 Q 28 24 8 12 Z" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          {/* Upper & lower teeth */}
-          <path d="M 12 12 Q 28 11 44 12 Q 28 18 12 12 Z" fill="#ffffff" />
-          <line x1="12" y1="13" x2="44" y2="13" stroke="#e2e8f0" strokeWidth="1" />
-        </svg>
+        <g id="viseme-e-ee" transform={`translate(0, ${talkBounce})`}>
+          <path d="M 275 272 Q 300 264 325 272 Q 300 288 275 272 Z" fill="#7f1d1d" stroke="#0f172a" strokeWidth="4" />
+          <path d="M 280 272 Q 300 270 320 272 Q 300 280 280 272 Z" fill="#ffffff" />
+          <line x1="280" y1="273" x2="320" y2="273" stroke="#cbd5e1" strokeWidth="1.5" />
+        </g>
       );
 
-    case 'M_B_P': // Closed lips / pressed
+    case 'M_B_P': // Pressed lips
       return (
-        <svg className="w-12 h-5" viewBox="0 0 48 20">
-          <path d="M 10 10 Q 24 13 38 10" fill="none" stroke="#450a0a" strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M 16 14 Q 24 16 32 14" fill="none" stroke={skinColor} strokeWidth="1.5" opacity="0.6" />
-        </svg>
+        <g id="viseme-m-b-p">
+          <path d="M 280 275 Q 300 278 320 275" fill="none" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+          <path d="M 288 279 Q 300 281 312 279" fill="none" stroke={skinColor} strokeWidth="2" opacity="0.6" />
+        </g>
       );
 
-    case 'F_V': // Upper teeth resting on lower lip
+    case 'F_V': // Upper teeth on lower lip
       return (
-        <svg className="w-12 h-6" viewBox="0 0 48 24">
-          <path d="M 12 10 Q 24 8 36 10 L 34 16 Q 24 18 14 16 Z" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          {/* Teeth showing */}
-          <rect x="18" y="9" width="12" height="4" fill="#ffffff" rx="1" />
-        </svg>
+        <g id="viseme-f-v">
+          <path d="M 282 272 Q 300 269 318 272 L 315 279 Q 300 282 285 279 Z" fill="#7f1d1d" stroke="#0f172a" strokeWidth="3.5" />
+          <rect x="291" y="271" width="18" height="5" fill="#ffffff" rx="1.5" />
+        </g>
       );
 
     case 'L_TH': // Tongue sticking between teeth
       return (
-        <svg className="w-12 h-7" viewBox="0 0 48 28">
-          <path d="M 12 12 Q 24 10 36 12 Q 24 22 12 12 Z" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          <ellipse cx="24" cy="15" rx="6" ry="4" fill="#f43f5e" />
-          <path d="M 16 11 Q 24 12 32 11" stroke="#ffffff" strokeWidth="2" />
-        </svg>
+        <g id="viseme-l-th">
+          <path d="M 280 273 Q 300 268 320 273 Q 300 286 280 273 Z" fill="#7f1d1d" stroke="#0f172a" strokeWidth="4" />
+          <ellipse cx="300" cy="277" rx="8" ry="5" fill="#f43f5e" />
+          <path d="M 286 272 Q 300 274 314 272" stroke="#ffffff" strokeWidth="3" />
+        </g>
       );
 
-    case 'S_Z': // Narrow clamped teeth
+    case 'S_Z': // Clamped teeth
       return (
-        <svg className="w-12 h-6" viewBox="0 0 48 24">
-          <rect x="12" y="9" width="24" height="7" rx="3" fill="#ffffff" stroke="#450a0a" strokeWidth="2" />
-          <line x1="14" y1="12.5" x2="34" y2="12.5" stroke="#94a3b8" strokeWidth="1.5" />
-        </svg>
+        <g id="viseme-s-z">
+          <rect x="282" y="270" width="36" height="10" rx="4" fill="#ffffff" stroke="#0f172a" strokeWidth="3.5" />
+          <line x1="284" y1="275" x2="316" y2="275" stroke="#94a3b8" strokeWidth="2" />
+        </g>
       );
 
-    case 'W_OO': // Pursed small whistle lips
+    case 'W_OO': // Small whistle lips
       return (
-        <svg className="w-8 h-8" viewBox="0 0 32 32">
-          <circle cx="16" cy="16" r="6" fill="#7f1d1d" stroke="#450a0a" strokeWidth="2" />
-          <circle cx="16" cy="16" r="3" fill="#f43f5e" />
-        </svg>
+        <g id="viseme-w-oo">
+          <circle cx="300" cy="275" r="9" fill="#7f1d1d" stroke="#0f172a" strokeWidth="3.5" />
+          <circle cx="300" cy="275" r="4" fill="#f43f5e" />
+        </g>
       );
 
     case 'silence':
-    default: // Natural relaxed mouth
+    default: // Relaxed mouth
       return (
-        <svg className="w-12 h-6" viewBox="0 0 48 24">
-          <path d="M 14 11 Q 24 16 34 11" fill="none" stroke="#450a0a" strokeWidth="3" strokeLinecap="round" />
-        </svg>
+        <g id="viseme-silence">
+          <path d="M 284 274 Q 300 282 316 274" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+        </g>
       );
   }
 };

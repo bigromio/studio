@@ -7,223 +7,161 @@ interface EyesAndEyebrowsProps {
   frame: number;
 }
 
+/**
+ * Pure SVG Eyes & Eyebrows
+ * Coordinate Origin: Centered in Head SVG coordinates around (300, 215)
+ */
 export const EyesAndEyebrows: React.FC<EyesAndEyebrowsProps> = ({ expression, eyeColorHex, frame }) => {
-  // Automatic natural blink every ~70 frames
-  const isBlinking = frame % 70 > 66;
+  // Natural blink loop every ~75 frames
+  const isBlinking = frame % 75 > 71;
 
-  // Pupil movement based on frame
-  const pupilShiftX = Math.sin(frame * 0.05) * 2;
-  const pupilShiftY = Math.cos(frame * 0.04) * 1;
+  // Pupil micro-saccades
+  const pupilShiftX = Math.sin(frame * 0.05) * 3;
+  const pupilShiftY = Math.cos(frame * 0.04) * 2;
 
   if (isBlinking && expression !== 'shocked_bug') {
     return (
-      <div className="w-24 h-12 flex items-center justify-between px-2">
-        <div className="w-7 h-1.5 bg-slate-900 rounded-full" />
-        <div className="w-7 h-1.5 bg-slate-900 rounded-full" />
-      </div>
+      <g id="eyes-blinking">
+        {/* Eyebrows */}
+        <path d="M 245 185 Q 265 180 285 185" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M 315 185 Q 335 180 355 185" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+        {/* Closed Eyes Eyelashes */}
+        <path d="M 245 215 Q 265 225 285 215" fill="none" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+        <path d="M 315 215 Q 335 225 355 215" fill="none" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+      </g>
     );
   }
 
-  // Render eyes and brows per expression
   switch (expression) {
     case 'happy':
     case 'laughing':
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
+        <g id="eyes-happy">
           {/* Eyebrows lifted curved */}
-          <div className="flex justify-between px-1">
-            <svg className="w-7 h-3" viewBox="0 0 28 12">
-              <path d="M 2 10 Q 14 2 26 8" fill="none" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-            <svg className="w-7 h-3" viewBox="0 0 28 12">
-              <path d="M 2 8 Q 14 2 26 10" fill="none" stroke="#1e293b" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-          </div>
-          {/* Happy Anime Crescent Eyes */}
-          <div className="flex justify-between px-2">
-            <svg className="w-8 h-6" viewBox="0 0 32 24">
-              <path d="M 4 16 Q 16 2 28 16" fill="none" stroke="#0f172a" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-            <svg className="w-8 h-6" viewBox="0 0 32 24">
-              <path d="M 4 16 Q 16 2 28 16" fill="none" stroke="#0f172a" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-          </div>
-        </div>
+          <path d="M 245 180 Q 265 170 285 180" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M 315 180 Q 335 170 355 180" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          {/* Happy Anime Crescent Arcs */}
+          <path d="M 245 220 Q 265 195 285 220" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+          <path d="M 315 220 Q 335 195 355 220" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+          {/* Cute anime cheek blush */}
+          <ellipse cx="235" cy="235" rx="14" ry="7" fill="#f43f5e" opacity="0.35" />
+          <ellipse cx="365" cy="235" rx="14" ry="7" fill="#f43f5e" opacity="0.35" />
+        </g>
       );
 
     case 'shocked_bug':
       return (
-        <div className="w-24 h-14 flex flex-col justify-between select-none">
-          {/* High raised eyebrows */}
-          <div className="flex justify-between px-1">
-            <div className="w-8 h-1.5 bg-slate-900 rounded-full -rotate-6" />
-            <div className="w-8 h-1.5 bg-slate-900 rounded-full rotate-6" />
-          </div>
-          {/* Wide round startled eyes with tiny pupils */}
-          <div className="flex justify-between px-1">
-            <div className="w-9 h-9 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center shadow-inner">
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-950" />
-            </div>
-            <div className="w-9 h-9 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center shadow-inner">
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-950" />
-            </div>
-          </div>
-        </div>
+        <g id="eyes-shocked">
+          {/* High Raised Eyebrows */}
+          <path d="M 245 170 L 285 178" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+          <path d="M 315 178 L 355 170" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+          {/* Huge Wide Sclera */}
+          <circle cx="265" cy="215" r="22" fill="#ffffff" stroke="#0f172a" strokeWidth="4.5" />
+          <circle cx="335" cy="215" r="22" fill="#ffffff" stroke="#0f172a" strokeWidth="4.5" />
+          {/* Tiny Shocked Pupils */}
+          <circle cx="265" cy="215" r="6" fill="#0f172a" />
+          <circle cx="335" cy="215" r="6" fill="#0f172a" />
+          {/* Sweat drop */}
+          <path d="M 370 170 C 375 160 380 180 375 185 C 370 185 368 180 370 170 Z" fill="#38bdf8" />
+        </g>
       );
 
     case 'focused_coding':
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          {/* Intense lowered eyebrows */}
-          <div className="flex justify-between px-1">
-            <svg className="w-8 h-3" viewBox="0 0 32 12">
-              <path d="M 2 4 L 30 10" fill="none" stroke="#1e293b" strokeWidth="3.5" strokeLinecap="round" />
-            </svg>
-            <svg className="w-8 h-3" viewBox="0 0 32 12">
-              <path d="M 2 10 L 30 4" fill="none" stroke="#1e293b" strokeWidth="3.5" strokeLinecap="round" />
-            </svg>
-          </div>
-          {/* Half-closed focused eyes */}
-          <div className="flex justify-between px-2">
-            <div className="w-8 h-5 rounded-b-xl bg-white border-2 border-slate-900 overflow-hidden relative">
-              <div 
-                className="w-4 h-4 rounded-full absolute top-0.5 left-2 shadow"
-                style={{ backgroundColor: eyeColorHex }}
-              >
-                <div className="w-1.5 h-1.5 bg-black rounded-full mx-auto mt-1" />
-              </div>
-            </div>
-            <div className="w-8 h-5 rounded-b-xl bg-white border-2 border-slate-900 overflow-hidden relative">
-              <div 
-                className="w-4 h-4 rounded-full absolute top-0.5 left-2 shadow"
-                style={{ backgroundColor: eyeColorHex }}
-              >
-                <div className="w-1.5 h-1.5 bg-black rounded-full mx-auto mt-1" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <g id="eyes-focused">
+          {/* Intense Downward Eyebrows */}
+          <path d="M 245 180 L 288 190" stroke="#0f172a" strokeWidth="5.5" strokeLinecap="round" />
+          <path d="M 312 190 L 355 180" stroke="#0f172a" strokeWidth="5.5" strokeLinecap="round" />
+          {/* Narrow Focused Sclera */}
+          <g>
+            <clipPath id="left-focus-clip">
+              <rect x="245" y="195" width="40" height="24" rx="6" />
+            </clipPath>
+            <rect x="245" y="195" width="40" height="24" rx="6" fill="#ffffff" stroke="#0f172a" strokeWidth="4" />
+            <g clipPath="url(#left-focus-clip)">
+              <circle cx={265 + pupilShiftX} cy={207 + pupilShiftY} r="12" fill={eyeColorHex} />
+              <circle cx={265 + pupilShiftX} cy={207 + pupilShiftY} r="6" fill="#0f172a" />
+              <circle cx={262 + pupilShiftX} cy={204 + pupilShiftY} r="3" fill="#ffffff" />
+            </g>
+          </g>
+          <g>
+            <clipPath id="right-focus-clip">
+              <rect x="315" y="195" width="40" height="24" rx="6" />
+            </clipPath>
+            <rect x="315" y="195" width="40" height="24" rx="6" fill="#ffffff" stroke="#0f172a" strokeWidth="4" />
+            <g clipPath="url(#right-focus-clip)">
+              <circle cx={335 + pupilShiftX} cy={207 + pupilShiftY} r="12" fill={eyeColorHex} />
+              <circle cx={335 + pupilShiftX} cy={207 + pupilShiftY} r="6" fill="#0f172a" />
+              <circle cx={332 + pupilShiftX} cy={204 + pupilShiftY} r="3" fill="#ffffff" />
+            </g>
+          </g>
+        </g>
       );
 
     case 'smug_genius':
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          <div className="flex justify-between px-1">
-            <div className="w-8 h-1.5 bg-slate-900 rounded-full -rotate-6" />
-            <div className="w-8 h-1.5 bg-slate-900 rounded-full rotate-3" />
-          </div>
-          <div className="flex justify-between px-2 items-center">
-            {/* Left eye smug slit */}
-            <svg className="w-8 h-5" viewBox="0 0 32 20">
-              <path d="M 2 8 Q 16 16 30 8" fill="none" stroke="#0f172a" strokeWidth="3.5" strokeLinecap="round" />
-              <circle cx="16" cy="11" r="3" fill={eyeColorHex} />
-            </svg>
-            {/* Right eye open slightly */}
-            <div className="w-7 h-5 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden">
-              <div className="w-3.5 h-3.5 rounded-full bg-slate-900 absolute top-0.5 right-1" />
-            </div>
-          </div>
-        </div>
-      );
-
-    case 'confused_debugging':
-      return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          {/* One high eyebrow, one low furrowed */}
-          <div className="flex justify-between px-1">
-            <div className="w-8 h-2 bg-slate-900 rounded-full -rotate-12" />
-            <div className="w-8 h-2 bg-slate-900 rounded-full rotate-6" />
-          </div>
-          <div className="flex justify-between px-2">
-            <div className="w-7 h-6 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden">
-              <div className="w-3 h-3 rounded-full bg-slate-900 absolute top-1.5 left-2" />
-            </div>
-            <div className="w-8 h-7 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden">
-              <div className="w-4 h-4 rounded-full bg-slate-900 absolute top-1 left-2" />
-            </div>
-          </div>
-        </div>
+        <g id="eyes-smug">
+          {/* One cocked brow */}
+          <path d="M 245 178 L 285 185" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+          <path d="M 315 174 Q 335 168 355 180" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
+          {/* Left eye smug curve */}
+          <path d="M 245 215 Q 265 205 285 215" fill="none" stroke="#0f172a" strokeWidth="5.5" strokeLinecap="round" />
+          {/* Right eye open slit */}
+          <ellipse cx="335" cy="215" rx="18" ry="12" fill="#ffffff" stroke="#0f172a" strokeWidth="4" />
+          <circle cx="338" cy="215" r="7" fill={eyeColorHex} />
+          <circle cx="338" cy="215" r="3.5" fill="#0f172a" />
+        </g>
       );
 
     case 'wink':
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          <div className="flex justify-between px-1">
-            <div className="w-7 h-1.5 bg-slate-900 rounded-full" />
-            <div className="w-7 h-1.5 bg-slate-900 rounded-full -rotate-6" />
-          </div>
-          <div className="flex justify-between px-2 items-center">
-            {/* Winking right eye */}
-            <div className="w-8 h-7 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden">
-              <div 
-                className="w-4 h-4 rounded-full absolute top-1.5 left-2"
-                style={{ backgroundColor: eyeColorHex }}
-              >
-                <div className="w-2 h-2 rounded-full bg-slate-950 mx-auto mt-0.5" />
-              </div>
-            </div>
-            <svg className="w-8 h-4" viewBox="0 0 32 16">
-              <path d="M 2 12 Q 16 2 30 12" fill="none" stroke="#0f172a" strokeWidth="4" strokeLinecap="round" />
-            </svg>
-          </div>
-        </div>
+        <g id="eyes-wink">
+          {/* Eyebrows */}
+          <path d="M 245 180 Q 265 172 285 180" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M 315 182 L 355 176" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          {/* Left eye wide open */}
+          <ellipse cx="265" cy="215" rx="19" ry="16" fill="#ffffff" stroke="#0f172a" strokeWidth="4" />
+          <circle cx={265 + pupilShiftX} cy={215 + pupilShiftY} r="10" fill={eyeColorHex} />
+          <circle cx={265 + pupilShiftX} cy={215 + pupilShiftY} r="5" fill="#0f172a" />
+          <circle cx={262 + pupilShiftX} cy={212 + pupilShiftY} r="2.5" fill="#ffffff" />
+          {/* Right eye winking smile */}
+          <path d="M 315 218 Q 335 200 355 218" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+        </g>
       );
 
     case 'angry_syntax_error':
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          {/* Hard V-shaped angry brows */}
-          <div className="flex justify-between px-1">
-            <div className="w-8 h-2 bg-red-950 rounded-full rotate-12" />
-            <div className="w-8 h-2 bg-red-950 rounded-full -rotate-12" />
-          </div>
-          <div className="flex justify-between px-2">
-            <div className="w-8 h-6 rounded-b-lg bg-white border-2 border-red-950 relative overflow-hidden">
-              <div className="w-4 h-4 rounded-full bg-red-900 absolute top-1 left-2" />
-            </div>
-            <div className="w-8 h-6 rounded-b-lg bg-white border-2 border-red-950 relative overflow-hidden">
-              <div className="w-4 h-4 rounded-full bg-red-900 absolute top-1 right-2" />
-            </div>
-          </div>
-        </div>
+        <g id="eyes-angry">
+          {/* Furrowed angry brows */}
+          <path d="M 245 188 L 290 200" stroke="#7f1d1d" strokeWidth="6" strokeLinecap="round" />
+          <path d="M 310 200 L 355 188" stroke="#7f1d1d" strokeWidth="6" strokeLinecap="round" />
+          {/* Narrow eyes */}
+          <ellipse cx="265" cy="216" rx="18" ry="12" fill="#ffffff" stroke="#7f1d1d" strokeWidth="4" />
+          <circle cx="265" cy="216" r="7" fill="#dc2626" />
+          <circle cx="265" cy="216" r="3.5" fill="#0f172a" />
+          <ellipse cx="335" cy="216" rx="18" ry="12" fill="#ffffff" stroke="#7f1d1d" strokeWidth="4" />
+          <circle cx="335" cy="216" r="7" fill="#dc2626" />
+          <circle cx="335" cy="216" r="3.5" fill="#0f172a" />
+        </g>
       );
 
-    default: // Standard open confident eyes
+    default: // Confident / Standard Open Cartoon Eyes
       return (
-        <div className="w-24 h-12 flex flex-col justify-between select-none">
-          <div className="flex justify-between px-2">
-            <div className="w-7 h-1.5 bg-slate-900 rounded-full" />
-            <div className="w-7 h-1.5 bg-slate-900 rounded-full" />
-          </div>
-          <div className="flex justify-between px-2">
-            <div className="w-8 h-7 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden shadow-inner">
-              <div 
-                className="w-4 h-4 rounded-full absolute shadow"
-                style={{ 
-                  backgroundColor: eyeColorHex,
-                  top: `${4 + pupilShiftY}px`,
-                  left: `${4 + pupilShiftX}px`
-                }}
-              >
-                <div className="w-2 h-2 rounded-full bg-slate-950 mx-auto mt-1" />
-                <div className="w-1 h-1 rounded-full bg-white absolute top-0.5 right-0.5" />
-              </div>
-            </div>
-            <div className="w-8 h-7 rounded-full bg-white border-2 border-slate-900 relative overflow-hidden shadow-inner">
-              <div 
-                className="w-4 h-4 rounded-full absolute shadow"
-                style={{ 
-                  backgroundColor: eyeColorHex,
-                  top: `${4 + pupilShiftY}px`,
-                  left: `${4 + pupilShiftX}px`
-                }}
-              >
-                <div className="w-2 h-2 rounded-full bg-slate-950 mx-auto mt-1" />
-                <div className="w-1 h-1 rounded-full bg-white absolute top-0.5 right-0.5" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <g id="eyes-default">
+          {/* Eyebrows */}
+          <path d="M 245 182 Q 265 174 285 182" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M 315 182 Q 335 174 355 182" fill="none" stroke="#0f172a" strokeWidth="4.5" strokeLinecap="round" />
+          {/* Left Eye */}
+          <ellipse cx="265" cy="215" rx="20" ry="17" fill="#ffffff" stroke="#0f172a" strokeWidth="4.5" />
+          <circle cx={265 + pupilShiftX} cy={215 + pupilShiftY} r="11" fill={eyeColorHex} />
+          <circle cx={265 + pupilShiftX} cy={215 + pupilShiftY} r="5.5" fill="#0f172a" />
+          <circle cx={262 + pupilShiftX} cy={211 + pupilShiftY} r="3" fill="#ffffff" />
+          {/* Right Eye */}
+          <ellipse cx="335" cy="215" rx="20" ry="17" fill="#ffffff" stroke="#0f172a" strokeWidth="4.5" />
+          <circle cx={335 + pupilShiftX} cy={215 + pupilShiftY} r="11" fill={eyeColorHex} />
+          <circle cx={335 + pupilShiftX} cy={215 + pupilShiftY} r="5.5" fill="#0f172a" />
+          <circle cx={332 + pupilShiftX} cy={211 + pupilShiftY} r="3" fill="#ffffff" />
+        </g>
       );
   }
 };

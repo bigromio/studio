@@ -1,333 +1,429 @@
 import React from 'react';
 import { RoomEnvironmentConfig } from '../types';
-import { ScreenCodeDisplay, CoffeeCupSteam, ProgrammerWindow, ServerRackTower } from './elements';
+import { ScreenCodeDisplay, CoffeeCupSteamSVG, ProgrammerWindowSVG, ServerRackTowerSVG } from './elements';
 
 interface RoomEnvironmentProps {
   config: RoomEnvironmentConfig;
   frame: number;
 }
 
+/**
+ * Pure SVG Room Environment natively calibrated for 1080x1920 Vertical Canvas (9:16)
+ * Supports 5 camera perspectives: front, right_45, left_45, top_down, low_angle
+ */
 export const RoomEnvironment: React.FC<RoomEnvironmentProps> = ({ config, frame }) => {
-  const { angle, timeOfDay, showMonitorsCode, codeTheme, ambientSteam, rgbStripColor, windowRain, serverRackBlink, mugText, plantOnDesk } = config;
+  const {
+    angle,
+    timeOfDay,
+    showMonitorsCode,
+    codeTheme,
+    ambientSteam,
+    rgbStripColor,
+    windowRain,
+    serverRackBlink,
+    mugText,
+    plantOnDesk
+  } = config;
 
-  // Background wall styling based on time of day
-  const wallBg = 
-    timeOfDay === 'midnight' ? 'bg-[#0b0f19]' :
-    timeOfDay === 'sunset' ? 'bg-[#1a0e23]' :
-    timeOfDay === 'cyberpunk_night' ? 'bg-[#0f0c24]' :
-    'bg-[#f0f4f8]';
+  const isNight = timeOfDay === 'midnight' || timeOfDay === 'cyberpunk_night';
+  const isSunset = timeOfDay === 'sunset';
 
-  const floorBg = 
-    timeOfDay === 'daylight' ? 'bg-[#cbd5e1]' : 'bg-[#05070d]';
+  const wallBg = isNight ? '#0b0f19' : isSunset ? '#1a0e24' : '#e2e8f0';
+  const floorBg = isNight ? '#030712' : isSunset ? '#090514' : '#cbd5e1';
 
-  // Render Front View
+  // 1. FRONT VIEW (NATIVE 1080x1920 VERTICAL)
   if (angle === 'front') {
     return (
-      <div className={`relative w-full h-full overflow-hidden ${wallBg} select-none transition-colors duration-300`}>
-        {/* RGB Light Strip on Wall */}
-        <div 
-          className="absolute top-0 inset-x-0 h-1.5 shadow-lg transition-all"
-          style={{ backgroundColor: rgbStripColor, boxShadow: `0 0 35px ${rgbStripColor}` }}
-        />
+      <svg
+        viewBox="0 0 1080 1920"
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="wall-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={wallBg} />
+            <stop offset="100%" stopColor={isNight ? '#040711' : '#f1f5f9'} />
+          </linearGradient>
+          <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="15" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
 
-        {/* Ambient Wall Posters / Shelves */}
-        <div className="absolute top-10 left-12 w-28 h-40 bg-slate-900/90 border-2 border-slate-700/60 rounded-md p-2 shadow-xl flex flex-col justify-between overflow-hidden">
-          <div className="text-[8px] font-black uppercase text-pink-400 tracking-wider">KEEP CALM & GIT PUSH</div>
-          <div className="w-16 h-16 mx-auto rounded-full border-2 border-cyan-400/40 flex items-center justify-center">
-            <span className="text-xl">🚀</span>
-          </div>
-          <div className="text-[6px] text-slate-500 font-mono">STAGING // PRODUCTION</div>
-        </div>
+        {/* 1.1 ROOM BACKGROUND WALL */}
+        <rect x="0" y="0" width="1080" height="1700" fill="url(#wall-grad)" />
 
-        {/* Window on right */}
-        <div className="absolute top-8 right-12 w-48 h-56 z-0">
-          <ProgrammerWindow timeOfDay={timeOfDay} rain={windowRain} frame={frame} />
-        </div>
+        {/* 1.2 TOP RGB LIGHT BAR */}
+        <rect x="0" y="0" width="1080" height="24" fill={rgbStripColor} filter="url(#neon-glow)" />
 
-        {/* Floating Wall Shelf with Books & Figurines */}
-        <div className="absolute top-28 left-48 w-44 h-3 bg-amber-900 rounded shadow-md border-b-2 border-amber-950 flex items-end px-2 space-x-1.5 rtl:space-x-reverse">
-          <div className="w-3 h-10 bg-emerald-600 rounded-t -mb-1 shadow-sm" />
-          <div className="w-3.5 h-12 bg-indigo-600 rounded-t -mb-1 shadow-sm" />
-          <div className="w-3 h-8 bg-amber-600 rounded-t -mb-1 shadow-sm" />
-          <div className="w-4 h-6 bg-cyan-400/80 rounded-t -mb-1 flex items-center justify-center text-[8px]">👾</div>
-        </div>
+        {/* 1.3 UPPER THIRD (Y: 0 - 600): Posters, Shelf, Window & Server Rack */}
+        {/* Acoustic Sound Dampening Hex Panels */}
+        <g fill="#1e293b" opacity="0.35" stroke="#334155" strokeWidth="2">
+          <polygon points="460,80 500,105 500,150 460,175 420,150 420,105" />
+          <polygon points="550,80 590,105 590,150 550,175 510,150 510,105" />
+          <polygon points="505,160 545,185 545,230 505,255 465,230 465,185" />
+        </g>
 
-        {/* Server Rack on far left */}
-        <div className="absolute bottom-24 left-6 z-10">
-          <ServerRackTower blinking={serverRackBlink} frame={frame} />
-        </div>
+        {/* Left Server Rack */}
+        <g transform="translate(45, 160)">
+          <ServerRackTowerSVG blinking={serverRackBlink} frame={frame} height={600} />
+        </g>
 
-        {/* Main Programmer Desk Surface */}
-        <div className="absolute bottom-0 inset-x-0 h-36 z-10 flex flex-col justify-end">
-          {/* Desk Top Wood Panel */}
-          <div className="w-full h-14 bg-gradient-to-b from-slate-800 to-slate-900 border-t-4 border-slate-600 relative shadow-2xl flex items-center justify-between px-16">
-            
-            {/* Left Decor: Plant */}
-            {plantOnDesk && (
-              <div className="relative -top-8 flex flex-col items-center">
-                <div className="flex -space-x-1 -mb-1">
-                  <div className="w-4 h-8 bg-emerald-500 rounded-full rotate-[-25deg] shadow" />
-                  <div className="w-5 h-9 bg-emerald-400 rounded-full shadow" />
-                  <div className="w-4 h-8 bg-emerald-600 rounded-full rotate-[25deg] shadow" />
-                </div>
-                <div className="w-8 h-8 bg-amber-700 rounded-b-md border-2 border-amber-900" />
-              </div>
-            )}
+        {/* Floating Wall Shelf with Retro Figurines & Dev Books */}
+        <g transform="translate(260, 240)">
+          {/* Shelf Plank */}
+          <rect x="0" y="100" width="360" height="18" rx="4" fill="#78350f" stroke="#451a03" strokeWidth="3" />
+          {/* Books */}
+          <rect x="20" y="20" width="28" height="80" rx="3" fill="#059669" />
+          <rect x="52" y="10" width="34" height="90" rx="3" fill="#4f46e5" />
+          <rect x="90" y="30" width="26" height="70" rx="3" fill="#ea580c" />
+          <rect x="120" y="15" width="32" height="85" rx="3" fill="#0284c7" />
+          {/* Arcade Mini Figurine */}
+          <g transform="translate(240, 30)">
+            <rect x="0" y="0" width="55" height="70" rx="10" fill="#ec4899" stroke="#0f172a" strokeWidth="4" />
+            <circle cx="20" cy="25" r="5" fill="#ffffff" />
+            <circle cx="35" cy="25" r="5" fill="#ffffff" />
+            <rect x="15" y="45" width="25" height="8" rx="2" fill="#0f172a" />
+          </g>
+        </g>
 
-            {/* Center: Keyboard & Mousepad glow */}
-            <div className="relative -top-3 w-80 h-10 bg-slate-950/80 rounded border border-slate-700 flex items-center justify-center px-4 shadow-lg">
-              <div 
-                className="w-48 h-6 bg-slate-900 rounded border border-slate-600 flex items-center justify-around px-1"
-                style={{ boxShadow: `0 0 12px ${rgbStripColor}33` }}
-              >
-                {[...Array(12)].map((_, i) => (
-                  <span key={i} className="w-2.5 h-3 bg-slate-800 rounded-sm inline-block border border-slate-700" />
-                ))}
-              </div>
-              <div className="w-4 h-6 ml-4 bg-slate-800 rounded-full border border-slate-600" />
-            </div>
+        {/* Tech / AI Poster */}
+        <g transform="translate(260, 410)">
+          <rect x="0" y="0" width="280" height="180" rx="10" fill="#0f172a" stroke="#334155" strokeWidth="4" />
+          <rect x="12" y="12" width="256" height="156" rx="6" fill="#1e1b4b" />
+          <text x="140" y="55" fill="#38bdf8" fontSize="18" fontFamily="monospace" fontWeight="900" textAnchor="middle" letterSpacing="3">
+            REMOTION // STUDIO
+          </text>
+          <circle cx="140" cy="105" r="30" fill="none" stroke="#ec4899" strokeWidth="4" />
+          <polygon points="132,92 154,105 132,118" fill="#facc15" />
+        </g>
 
-            {/* Right Decor: Coffee Cup */}
-            <div className="relative -top-4">
-              <CoffeeCupSteam showSteam={ambientSteam} frame={frame} text={mugText} />
-            </div>
-          </div>
+        {/* High Window with City Skyline */}
+        <g transform="translate(680, 140)">
+          <ProgrammerWindowSVG timeOfDay={timeOfDay} rain={windowRain} frame={frame} width={340} height={450} />
+        </g>
 
-          {/* Desk Legs & Floor */}
-          <div className={`w-full h-22 ${floorBg} border-t-2 border-slate-900/60 relative flex justify-between px-20`}>
-            <div className="w-4 h-full bg-slate-700 shadow-md" />
-            <div className="w-4 h-full bg-slate-700 shadow-md" />
-            {/* Cables on floor */}
-            <div className="absolute bottom-2 left-32 w-48 h-2 border-b-2 border-slate-800 rounded-full opacity-60" />
-          </div>
-        </div>
+        {/* 1.4 LOWER THIRD (Y: 1350 - 1920): Monitors, Desk, Mechanical Keyboard & Floor */}
+        {/* Ultrawide Dual Screens */}
+        {/* Main Center Ultrawide Screen */}
+        <g transform="translate(180, 1220)">
+          {/* Stand */}
+          <rect x="330" y="320" width="60" height="60" fill="#334155" stroke="#0f172a" strokeWidth="4" />
+          <rect x="250" y="360" width="220" height="20" rx="6" fill="#1e293b" stroke="#0f172a" strokeWidth="3" />
+          {/* Screen Outer Bevel */}
+          <rect x="0" y="0" width="720" height="330" rx="14" fill="#020617" stroke="#475569" strokeWidth="8" />
+          {/* Screen Code Content */}
+          <g transform="translate(14, 14)">
+            {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} width={692} height={302} />}
+          </g>
+        </g>
 
-        {/* Dual Ultrawide Monitors Setup */}
-        <div className="absolute bottom-36 inset-x-0 flex justify-center items-end space-x-4 rtl:space-x-reverse z-10">
-          {/* Main Primary Center Screen */}
-          <div className="w-80 h-48 bg-slate-900 rounded-t-lg border-4 border-slate-700 shadow-2xl relative flex flex-col justify-between p-1">
-            {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} />}
-            {/* Monitor Stand */}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-10 h-6 bg-slate-700" />
-          </div>
+        {/* Secondary Vertical Monitor on Right */}
+        <g transform="translate(915, 1140)">
+          <rect x="0" y="0" width="135" height="420" rx="10" fill="#020617" stroke="#334155" strokeWidth="6" />
+          <g transform="translate(8, 8)">
+            {showMonitorsCode && <ScreenCodeDisplay theme="matrix" frame={frame + 30} width={119} height={404} />}
+          </g>
+        </g>
 
-          {/* Secondary Vertical Screen */}
-          <div className="w-32 h-56 bg-slate-900 rounded-t-lg border-4 border-slate-700 shadow-2xl relative p-1">
-            {showMonitorsCode && <ScreenCodeDisplay theme="matrix" frame={frame + 30} />}
-            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-8 h-6 bg-slate-700" />
-          </div>
-        </div>
-      </div>
+        {/* Heavy Developer Desk */}
+        <g id="desk-group" transform="translate(0, 1540)">
+          {/* Desk Top Bevel */}
+          <rect x="0" y="0" width="1080" height="160" fill="#1e293b" stroke="#0f172a" strokeWidth="6" />
+          <rect x="0" y="0" width="1080" height="30" fill="#334155" />
+          {/* Glowing under-desk LED Strip */}
+          <rect x="0" y="160" width="1080" height="15" fill={rgbStripColor} filter="url(#neon-glow)" />
+
+          {/* Plant on Left */}
+          {plantOnDesk && (
+            <g transform="translate(90, -45)">
+              <rect x="15" y="45" width="50" height="50" rx="8" fill="#b45309" stroke="#78350f" strokeWidth="3" />
+              {/* Succulent leaves */}
+              <ellipse cx="40" cy="35" rx="15" ry="30" fill="#10b981" stroke="#047857" strokeWidth="2" />
+              <ellipse cx="25" cy="40" rx="12" ry="25" fill="#34d399" stroke="#047857" strokeWidth="2" transform="rotate(-30 25 40)" />
+              <ellipse cx="55" cy="40" rx="12" ry="25" fill="#34d399" stroke="#047857" strokeWidth="2" transform="rotate(30 55 40)" />
+            </g>
+          )}
+
+          {/* Steaming Coffee Mug */}
+          <g transform="translate(230, -30)">
+            <CoffeeCupSteamSVG showSteam={ambientSteam} frame={frame} text={mugText} />
+          </g>
+
+          {/* Mechanical Keyboard & Desk Mat */}
+          <g transform="translate(360, 20)">
+            {/* Cyber Desk Mat */}
+            <rect x="-40" y="-10" width="460" height="110" rx="10" fill="#090d16" stroke={rgbStripColor} strokeWidth="2" />
+            {/* Mechanical Keyboard Body */}
+            <rect x="0" y="0" width="320" height="85" rx="8" fill="#0f172a" stroke="#334155" strokeWidth="3" />
+            {/* Keycaps Grid */}
+            <g fill="#1e293b" stroke="#334155" strokeWidth="1.5">
+              {[...Array(10)].map((_, i) => (
+                <rect key={`k1-${i}`} x={12 + i * 30} y="10" width="24" height="14" rx="2" />
+              ))}
+              {[...Array(10)].map((_, i) => (
+                <rect key={`k2-${i}`} x={12 + i * 30} y="28" width="24" height="14" rx="2" />
+              ))}
+              {[...Array(9)].map((_, i) => (
+                <rect key={`k3-${i}`} x={12 + i * 33} y="46" width="27" height="14" rx="2" />
+              ))}
+              {/* Spacebar */}
+              <rect x="75" y="64" width="160" height="14" rx="3" fill="#334155" stroke={rgbStripColor} strokeWidth="1.5" />
+            </g>
+            {/* High-DPI Mouse */}
+            <rect x="345" y="15" width="40" height="60" rx="18" fill="#1e293b" stroke="#475569" strokeWidth="2.5" />
+            <circle cx="365" cy="30" r="4" fill="#06b6d4" />
+          </g>
+
+          {/* Desk Underframe & Legs */}
+          <rect x="80" y="175" width="40" height="205" fill="#334155" stroke="#0f172a" strokeWidth="4" />
+          <rect x="960" y="175" width="40" height="205" fill="#334155" stroke="#0f172a" strokeWidth="4" />
+        </g>
+
+        {/* 1.5 FLOOR LAYER */}
+        <rect x="0" y="1715" width="1080" height="205" fill={floorBg} />
+        <line x1="0" y1="1715" x2="1080" y2="1715" stroke="#020617" strokeWidth="6" />
+        {/* Cable Route on Floor */}
+        <path d="M 280 1850 Q 540 1890 800 1840" fill="none" stroke="#0f172a" strokeWidth="8" strokeLinecap="round" opacity="0.6" />
+      </svg>
     );
   }
 
-  // Render Right Angle (45 degrees side-perspective)
+  // 2. RIGHT 45 ANGLE PERSPECTIVE
   if (angle === 'right_45') {
     return (
-      <div className={`relative w-full h-full overflow-hidden ${wallBg} select-none transition-colors`}>
-        <div 
-          className="absolute top-0 inset-x-0 h-1.5"
-          style={{ backgroundColor: rgbStripColor, boxShadow: `0 0 35px ${rgbStripColor}` }}
-        />
-        {/* Wall Art on Left Side */}
-        <div className="absolute top-12 left-10 w-44 h-48 bg-slate-900/80 border-2 border-slate-700 rounded-lg p-3 shadow-2xl transform skew-y-3">
-          <div className="text-[10px] font-black text-cyan-400 font-mono">DEBUGGING_MODE: ON</div>
-          <div className="mt-4 w-full h-24 bg-slate-950 rounded border border-cyan-500/30 p-2 text-[8px] font-mono text-emerald-400 overflow-hidden">
-            &gt; CPU: 12 Cores 4.8GHz<br/>
-            &gt; RAM: 64GB DDR5<br/>
-            &gt; STACK: React + Remotion<br/>
-            &gt; READY.
-          </div>
-        </div>
+      <svg
+        viewBox="0 0 1080 1920"
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <filter id="neon-glow-r" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="15" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+        <rect x="0" y="0" width="1080" height="1700" fill={wallBg} />
+        <rect x="0" y="0" width="1080" height="24" fill={rgbStripColor} filter="url(#neon-glow-r)" />
+
+        {/* Left Side Wall Code Hologram */}
+        <g transform="translate(60, 180) skewY(6)">
+          <rect x="0" y="0" width="400" height="460" rx="12" fill="#0f172a" stroke="#38bdf8" strokeWidth="4" opacity="0.9" />
+          <text x="200" y="50" fill="#38bdf8" fontSize="22" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+            &gt; CODE_FLOW: 45°
+          </text>
+          <line x1="20" y1="70" x2="380" y2="70" stroke="#334155" strokeWidth="2" />
+        </g>
 
         {/* Angled Window on Back Right */}
-        <div className="absolute top-8 right-20 w-44 h-52 transform -skew-y-3">
-          <ProgrammerWindow timeOfDay={timeOfDay} rain={windowRain} frame={frame} />
-        </div>
+        <g transform="translate(620, 140) skewY(-4)">
+          <ProgrammerWindowSVG timeOfDay={timeOfDay} rain={windowRain} frame={frame} width={380} height={480} />
+        </g>
 
-        {/* 3D Angled Desk Surface */}
-        <div className="absolute bottom-0 right-0 w-3/4 h-52 bg-slate-800 border-l-4 border-t-4 border-slate-600 rounded-tl-3xl shadow-2xl transform -skew-x-6 flex items-start justify-around pt-6 px-10 z-10">
-          <div className="w-56 h-36 bg-slate-900 border-2 border-slate-600 rounded-lg p-1 shadow-2xl transform skew-y-2">
-            {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} />}
-          </div>
-          <div className="mt-8">
-            <CoffeeCupSteam showSteam={ambientSteam} frame={frame} text={mugText} />
-          </div>
-        </div>
+        {/* Angled 3D Desk Surface */}
+        <g transform="translate(200, 1400) skewX(-10)">
+          <rect x="0" y="0" width="880" height="320" rx="20" fill="#1e293b" stroke="#0f172a" strokeWidth="6" />
+          {/* Angled Monitor */}
+          <g transform="translate(100, -80) skewY(3)">
+            <rect x="0" y="0" width="560" height="260" rx="10" fill="#020617" stroke="#475569" strokeWidth="6" />
+            <g transform="translate(10, 10)">
+              {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} width={540} height={240} />}
+            </g>
+          </g>
+          {/* Coffee on desk */}
+          <g transform="translate(700, 40)">
+            <CoffeeCupSteamSVG showSteam={ambientSteam} frame={frame} text={mugText} />
+          </g>
+        </g>
 
-        {/* Ergonomic Chair silhouette */}
-        <div className="absolute bottom-10 left-32 w-28 h-64 bg-slate-900/90 rounded-t-3xl border-4 border-slate-700 shadow-2xl z-0 flex flex-col items-center pt-3">
-          <div className="w-20 h-12 bg-slate-800 rounded-full border border-slate-600" />
-          <div className="w-24 h-28 bg-slate-800/80 rounded-2xl mt-4 border border-slate-600" />
-        </div>
-      </div>
+        {/* Floor */}
+        <rect x="0" y="1720" width="1080" height="200" fill={floorBg} />
+      </svg>
     );
   }
 
-  // Render Left Angle (45 degrees from left perspective)
+  // 3. LEFT 45 ANGLE PERSPECTIVE
   if (angle === 'left_45') {
     return (
-      <div className={`relative w-full h-full overflow-hidden ${wallBg} select-none transition-colors`}>
-        <div 
-          className="absolute top-0 inset-x-0 h-1.5"
-          style={{ backgroundColor: rgbStripColor, boxShadow: `0 0 35px ${rgbStripColor}` }}
-        />
-        {/* Left Server Rack and Audio Monitors */}
-        <div className="absolute top-16 left-8 z-10">
-          <ServerRackTower blinking={serverRackBlink} frame={frame} />
-        </div>
+      <svg
+        viewBox="0 0 1080 1920"
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <filter id="neon-glow-l" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="15" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+        <rect x="0" y="0" width="1080" height="1700" fill={wallBg} />
+        <rect x="0" y="0" width="1080" height="24" fill={rgbStripColor} filter="url(#neon-glow-l)" />
 
-        {/* Angled Window on Left Wall */}
-        <div className="absolute top-10 left-28 w-44 h-52 transform skew-y-3">
-          <ProgrammerWindow timeOfDay={timeOfDay} rain={windowRain} frame={frame} />
-        </div>
+        {/* Towering Server Rack on Left */}
+        <g transform="translate(50, 160)">
+          <ServerRackTowerSVG blinking={serverRackBlink} frame={frame} height={650} />
+        </g>
 
-        {/* Desk extending from left to right */}
-        <div className="absolute bottom-0 left-0 w-3/4 h-52 bg-slate-800 border-r-4 border-t-4 border-slate-600 rounded-tr-3xl shadow-2xl transform skew-x-6 flex items-start justify-around pt-6 px-10 z-10">
-          <div className="mt-8">
-            <CoffeeCupSteam showSteam={ambientSteam} frame={frame} text={mugText} />
-          </div>
-          <div className="w-60 h-36 bg-slate-900 border-2 border-slate-600 rounded-lg p-1 shadow-2xl transform -skew-y-2">
-            {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} />}
-          </div>
-        </div>
+        {/* Window on Left-Center Wall */}
+        <g transform="translate(250, 150) skewY(4)">
+          <ProgrammerWindowSVG timeOfDay={timeOfDay} rain={windowRain} frame={frame} width={360} height={460} />
+        </g>
 
-        {/* Right Wall Decor */}
-        <div className="absolute top-16 right-10 w-40 h-44 bg-slate-900/80 border-2 border-slate-700 rounded-lg p-3 shadow-2xl transform -skew-y-3">
-          <div className="text-[9px] font-black text-pink-400 font-mono text-center">CLEAN CODE ARCHITECTURE</div>
-          <div className="mt-3 flex justify-center">
-            <span className="text-3xl">☕</span>
-          </div>
-          <div className="mt-2 text-[7px] text-slate-400 text-center font-mono">Eat - Sleep - Code - Repeat</div>
-        </div>
-      </div>
+        {/* Right Wall Tech Poster */}
+        <g transform="translate(680, 200) skewY(-5)">
+          <rect x="0" y="0" width="340" height="420" rx="14" fill="#0f172a" stroke="#ec4899" strokeWidth="4" />
+          <text x="170" y="60" fill="#f472b6" fontSize="22" fontFamily="monospace" fontWeight="900" textAnchor="middle">
+            FULL_STACK
+          </text>
+        </g>
+
+        {/* Desk extending left to right */}
+        <g transform="translate(0, 1400) skewX(10)">
+          <rect x="0" y="0" width="880" height="320" rx="20" fill="#1e293b" stroke="#0f172a" strokeWidth="6" />
+          <g transform="translate(200, -80) skewY(-3)">
+            <rect x="0" y="0" width="560" height="260" rx="10" fill="#020617" stroke="#475569" strokeWidth="6" />
+            <g transform="translate(10, 10)">
+              {showMonitorsCode && <ScreenCodeDisplay theme={codeTheme} frame={frame} width={540} height={240} />}
+            </g>
+          </g>
+          <g transform="translate(80, 40)">
+            <CoffeeCupSteamSVG showSteam={ambientSteam} frame={frame} text={mugText} />
+          </g>
+        </g>
+
+        <rect x="0" y="1720" width="1080" height="200" fill={floorBg} />
+      </svg>
     );
   }
 
-  // Render Top-Down (Bird's Eye Perspective)
+  // 4. TOP-DOWN BIRD'S EYE VIEW
   if (angle === 'top_down') {
     return (
-      <div className={`relative w-full h-full overflow-hidden ${wallBg} select-none transition-colors p-6 flex flex-col justify-between`}>
-        {/* Top Edge: Wall with glowing LED strip */}
-        <div 
-          className="w-full h-4 rounded shadow-lg"
-          style={{ backgroundColor: rgbStripColor, boxShadow: `0 0 25px ${rgbStripColor}` }}
-        />
+      <svg
+        viewBox="0 0 1080 1920"
+        width="100%"
+        height="100%"
+        style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect x="0" y="0" width="1080" height="1920" fill="#090d16" />
+        {/* Top Wall Bevel */}
+        <rect x="0" y="0" width="1080" height="40" fill={rgbStripColor} />
 
-        {/* Huge Desk Layout from Above */}
-        <div className="w-full h-4/5 bg-slate-800/95 border-4 border-slate-700 rounded-2xl shadow-2xl relative p-6 flex flex-col justify-between">
+        {/* Giant Developer Desk from Above */}
+        <g transform="translate(60, 100)">
+          <rect x="0" y="0" width="960" height="1500" rx="24" fill="#1e293b" stroke="#334155" strokeWidth="8" />
+
           {/* Monitors Top Profile Bar */}
-          <div className="flex justify-center space-x-6 rtl:space-x-reverse">
-            <div className="w-72 h-8 bg-slate-950 rounded border-2 border-slate-700 shadow-inner flex items-center justify-center">
-              <span className="text-[9px] text-cyan-400 font-mono tracking-widest">[PRIMARY SCREEN ACTIVE]</span>
-            </div>
-            <div className="w-36 h-8 bg-slate-950 rounded border-2 border-slate-700 shadow-inner flex items-center justify-center">
-              <span className="text-[8px] text-pink-400 font-mono">[DEV TOOLS]</span>
-            </div>
-          </div>
+          <rect x="80" y="60" width="580" height="45" rx="8" fill="#020617" stroke="#06b6d4" strokeWidth="3" />
+          <text x="370" y="88" fill="#38bdf8" fontSize="16" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+            [PRIMARY SCREEN TOP VIEW]
+          </text>
+          <rect x="700" y="60" width="200" height="45" rx="8" fill="#020617" stroke="#ec4899" strokeWidth="3" />
 
-          {/* Desk Mat & Mechanical Keyboard */}
-          <div className="w-4/5 mx-auto h-32 bg-slate-950/90 rounded-xl border-2 border-slate-700/80 flex items-center justify-between px-8 shadow-2xl">
-            {/* Keyboard Grid */}
-            <div 
-              className="w-72 h-20 bg-slate-900 rounded-lg border-2 border-slate-600 p-2 flex flex-col justify-between"
-              style={{ boxShadow: `0 0 16px ${rgbStripColor}44` }}
-            >
-              <div className="flex justify-between">
-                {[...Array(14)].map((_, i) => (
-                  <span key={i} className="w-3 h-3 bg-slate-800 rounded-sm inline-block border border-slate-700" />
+          {/* Extra Large Desk Mat */}
+          <rect x="100" y="240" width="760" height="520" rx="20" fill="#090d16" stroke={rgbStripColor} strokeWidth="4" />
+
+          {/* Mechanical Keyboard Grid from Above */}
+          <g transform="translate(180, 320)">
+            <rect x="0" y="0" width="440" height="200" rx="12" fill="#0f172a" stroke="#475569" strokeWidth="4" />
+            {[...Array(6)].map((_, row) => (
+              <g key={row} transform={`translate(15, ${20 + row * 28})`}>
+                {[...Array(12)].map((_, col) => (
+                  <rect key={col} x={col * 34} y="0" width="28" height="20" rx="4" fill="#1e293b" stroke="#334155" strokeWidth="1.5" />
                 ))}
-              </div>
-              <div className="flex justify-between">
-                {[...Array(12)].map((_, i) => (
-                  <span key={i} className="w-3.5 h-3 bg-slate-800 rounded-sm inline-block border border-slate-700" />
-                ))}
-              </div>
-              <div className="flex justify-center">
-                <span className="w-32 h-3 bg-slate-700 rounded-sm border border-slate-600" />
-              </div>
-            </div>
+              </g>
+            ))}
+          </g>
 
-            {/* Mouse & Mousepad */}
-            <div className="w-14 h-22 bg-slate-900 rounded-2xl border-2 border-slate-700 flex flex-col items-center justify-start pt-2 shadow-md">
-              <div className="w-2 h-4 bg-cyan-400 rounded-full animate-pulse" />
-            </div>
-          </div>
+          {/* Mouse & Mousepad */}
+          <rect x="680" y="340" width="120" height="180" rx="14" fill="#0f172a" stroke="#334155" strokeWidth="3" />
+          <rect x="710" y="380" width="60" height="100" rx="25" fill="#1e293b" stroke="#06b6d4" strokeWidth="3" />
 
-          {/* Coffee Mug & Notes on desk */}
-          <div className="flex justify-between items-center px-8">
-            <div className="w-12 h-12 rounded-full bg-amber-900 border-4 border-amber-950 flex items-center justify-center shadow-lg">
-              <div className="w-6 h-6 rounded-full bg-amber-950" />
-            </div>
-            <div className="w-28 h-16 bg-yellow-100/90 rounded shadow-md border border-yellow-300 p-1.5 text-[7px] font-mono text-slate-800">
-              📌 TODO:<br/>
-              - Fix Remotion state<br/>
-              - Ship Cartoon Engine!
-            </div>
-          </div>
-        </div>
+          {/* Coffee Mug Top View */}
+          <circle cx="160" cy="900" r="45" fill="#92400e" stroke="#451a03" strokeWidth="6" />
+          <circle cx="160" cy="900" r="32" fill="#451a03" />
 
-        {/* Programmer Chair Headrest */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-48 h-10 bg-slate-900 border-2 border-slate-700 rounded-full shadow-2xl flex items-center justify-center">
-          <span className="text-[8px] font-mono text-slate-500">GAMING SEAT // ERGO</span>
-        </div>
-      </div>
+          {/* Sticky Notes */}
+          <rect x="660" y="860" width="180" height="180" rx="6" fill="#fef08a" stroke="#ca8a04" strokeWidth="2" />
+          <text x="680" y="900" fill="#854d0e" fontSize="16" fontFamily="monospace" fontWeight="bold">
+            📌 REMOTION 9:16
+          </text>
+          <text x="680" y="930" fill="#713f12" fontSize="14" fontFamily="monospace">
+            - Zero Tailwind
+          </text>
+          <text x="680" y="955" fill="#713f12" fontSize="14" fontFamily="monospace">
+            - Pure SVG Engine
+          </text>
+        </g>
+
+        {/* Chair Headrest Silhouette */}
+        <g transform="translate(340, 1660)">
+          <rect x="0" y="0" width="400" height="140" rx="30" fill="#020617" stroke="#334155" strokeWidth="6" />
+          <text x="200" y="75" fill="#64748b" fontSize="16" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+            ERGO GAMING SEAT
+          </text>
+        </g>
+      </svg>
     );
   }
 
-  // Render Low Angle (Dramatic Floor Level looking up)
+  // 5. LOW ANGLE HEROIC VIEW
   return (
-    <div className={`relative w-full h-full overflow-hidden ${wallBg} select-none transition-colors`}>
-      <div 
-        className="absolute top-0 inset-x-0 h-2 shadow-2xl"
-        style={{ backgroundColor: rgbStripColor, boxShadow: `0 0 50px ${rgbStripColor}` }}
-      />
-      {/* Huge Floor perspective with glowing neon grid */}
-      <div className="absolute inset-0 flex flex-col justify-between">
-        {/* Distant ceiling rafters */}
-        <div className="w-full h-16 bg-slate-950/80 border-b-2 border-slate-800 flex justify-around items-center px-4">
-          <div className="w-1/4 h-2 bg-slate-800 rounded" />
-          <div className="w-1/4 h-2 bg-slate-800 rounded" />
-          <div className="w-1/4 h-2 bg-slate-800 rounded" />
-        </div>
+    <svg
+      viewBox="0 0 1080 1920"
+      width="100%"
+      height="100%"
+      style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <filter id="neon-glow-low" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="20" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <rect x="0" y="0" width="1080" height="1920" fill="#090d16" />
 
-        {/* Low angle massive desk underframe */}
-        <div className="w-full h-2/3 bg-gradient-to-t from-slate-950 via-slate-900 to-slate-800 border-t-8 border-slate-700 relative shadow-2xl flex flex-col justify-end p-8">
-          {/* Glowing under-desk neon */}
-          <div 
-            className="absolute top-0 inset-x-0 h-4 blur-md"
-            style={{ backgroundColor: rgbStripColor }}
-          />
+      {/* Ceiling Rafters */}
+      <rect x="80" y="60" width="920" height="30" fill="#1e293b" />
+      <rect x="80" y="130" width="920" height="30" fill="#1e293b" />
 
-          {/* Giant PC Tower with tempered glass RGB fans */}
-          <div className="absolute bottom-6 right-16 w-36 h-60 bg-slate-950 border-4 border-slate-700 rounded-xl p-3 flex flex-col justify-between shadow-2xl">
-            <div className="text-[9px] font-mono text-cyan-400 font-bold border-b border-slate-800 pb-1 flex justify-between">
-              <span>TITAN_RIG</span>
-              <span className="animate-pulse">● RT-ON</span>
-            </div>
-            {/* 3 RGB Fans */}
-            <div className="space-y-2">
-              {[0, 1, 2].map((fan) => (
-                <div 
-                  key={fan}
-                  className="w-14 h-14 mx-auto rounded-full border-2 border-cyan-400 flex items-center justify-center shadow-lg animate-spin"
-                  style={{ animationDuration: '4s' }}
-                >
-                  <div className="w-8 h-8 rounded-full border border-pink-400 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-white" />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="text-[7px] text-slate-500 font-mono text-center">LIQUID COOLED</div>
-          </div>
+      {/* Heroic Massive Desk Underframe */}
+      <g transform="translate(0, 750)">
+        {/* Desk Top Profile Looming */}
+        <rect x="0" y="0" width="1080" height="240" fill="#1e293b" stroke="#0f172a" strokeWidth="8" />
+        {/* Huge glowing neon strip */}
+        <rect x="0" y="240" width="1080" height="30" fill={rgbStripColor} filter="url(#neon-glow-low)" />
 
-          {/* Giant screen bottom bevels looming above */}
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-4/5 h-24 bg-slate-900 border-4 border-slate-600 rounded-t-3xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex items-center justify-center">
-            <span className="text-xs font-mono text-cyan-300 font-black tracking-widest animate-pulse">&lt; HEROIC CODER VIEW /&gt;</span>
-          </div>
-        </div>
-      </div>
-    </div>
+        {/* Giant Liquid Cooled PC Tower */}
+        <g transform="translate(700, 320)">
+          <rect x="0" y="0" width="300" height="650" rx="20" fill="#020617" stroke="#334155" strokeWidth="8" />
+          <text x="150" y="50" fill="#38bdf8" fontSize="18" fontFamily="monospace" fontWeight="900" textAnchor="middle">
+            TITAN_RIG // 4.8GHz
+          </text>
+          {/* 3 Spinning RGB Fans */}
+          {[0, 1, 2].map((f) => (
+            <g key={f} transform={`translate(75, ${90 + f * 170})`}>
+              <circle cx="75" cy="75" r="65" fill="#0f172a" stroke="#06b6d4" strokeWidth="5" />
+              <g transform={`rotate(${(frame * 12 + f * 60) % 360} 75 75)`}>
+                <line x1="15" y1="75" x2="135" y2="75" stroke="#ec4899" strokeWidth="12" strokeLinecap="round" />
+                <line x1="75" y1="15" x2="75" y2="135" stroke="#ec4899" strokeWidth="12" strokeLinecap="round" />
+              </g>
+              <circle cx="75" cy="75" r="22" fill="#ffffff" />
+            </g>
+          ))}
+        </g>
+
+        {/* Heavy Desk Legs */}
+        <rect x="100" y="270" width="70" height="750" fill="#334155" stroke="#0f172a" strokeWidth="6" />
+      </g>
+    </svg>
   );
 };
