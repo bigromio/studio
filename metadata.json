@@ -1,0 +1,6 @@
+{
+  "name": "Cartoon Engine Remotion Studio",
+  "description": "استديو رسوم متحركة متكامل لريموشن مع بيئة مبرمج متعددة الزوايا وشخصية كرتونية ديناميكية وكاميرا وإضاءة ومكتبة نصوص وهوك وكابشن احترافية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
